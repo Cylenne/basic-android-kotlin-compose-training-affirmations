@@ -18,11 +18,17 @@ package com.example.affirmations
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import com.example.affirmations.model.Affirmation
 import com.example.affirmations.ui.theme.AffirmationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -45,4 +51,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AffirmationsApp() {
+}
+
+
+@Composable
+fun AffirmationCard(affirmation: Affirmation, modifier: Modifier = Modifier) {
+    //  It is a best practice to pass a modifier to every composable and set it to a default value.
+    Card(modifier = modifier) {
+        Column {
+            // In Compose, a Card is a surface that displays content and actions in a single container (Image and Text).
+            // The vertical layout of the image and text can be achieved using a Column composable wrapped in a Card composable.
+            Image(
+                // an Image composable always requires a resource to display, and a contentDescription
+                painter = painterResource(affirmation.imageResourceId),
+                contentDescription = stringResource(affirmation.stringResourceId),
+            )
+        }
+    }
 }
