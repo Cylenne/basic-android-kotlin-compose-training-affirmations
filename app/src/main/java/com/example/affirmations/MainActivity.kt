@@ -20,16 +20,34 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.affirmations.data.Datasource
 import com.example.affirmations.model.Affirmation
 import com.example.affirmations.ui.theme.AffirmationsTheme
+import androidx.compose.foundation.lazy.items // correct import for items()
 
 class MainActivity : ComponentActivity() {
 
@@ -51,6 +69,25 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AffirmationsApp() {
+    val layoutDirection = LocalLayoutDirection.current // retrieve the current layout directions
+    // to configure the padding
+    Surface(
+        modifier = Modifier
+            .fillMaxSize() // fills the max width and height of its parent
+            .statusBarsPadding() // sets status bar padding
+            .padding(
+                start = WindowInsets.safeDrawing
+                    .asPaddingValues() // sets the start and end padding to the layoutDirection
+                    .calculateStartPadding(layoutDirection),
+                end = WindowInsets.safeDrawing
+                    .asPaddingValues()
+                    .calculateEndPadding(layoutDirection),
+            ),
+    ) {
+        AffirmationsList(
+            affirmationList = Datasource().loadAffirmations(),
+        )
+    }
 }
 
 
@@ -65,7 +102,47 @@ fun AffirmationCard(affirmation: Affirmation, modifier: Modifier = Modifier) {
                 // an Image composable always requires a resource to display, and a contentDescription
                 painter = painterResource(affirmation.imageResourceId),
                 contentDescription = stringResource(affirmation.stringResourceId),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(194.dp),
+                contentScale = ContentScale.Crop // determines how the image should be scaled and displayed.
+            )
+            Text(
+                text = LocalContext.current.getString(affirmation.stringResourceId),
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.headlineSmall
             )
         }
     }
 }
+
+@Composable
+fun AffirmationsList(affirmationList: List<Affirmation>, modifier: Modifier = Modifier) {
+    LazyColumn(modifier = modifier) { //  scrollable list
+        // Column should be used when you have a small number of items to display,
+        // as Compose loads them all at once. It can only hold a predefined, or fixed, number of
+        // composables.
+        // A LazyColumn can add content on demand, which makes it good for long lists and
+        // particularly when the length of the list is unknown. It provides scrolling by default.
+
+        // lambda part of LazyColumn:
+        items(affirmationList) { affirmation -> // items() method is how you add items to the LazyColumn
+            // in the lambda function, affirmation is the parameter that represents one affirmation
+            // item from the affirmationList
+
+            // watch out that items is correctly imported
+
+            AffirmationCard( // for each affirmation in the list, call AffirmationCard()
+                affirmation = affirmation,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AffirmationCardPreview() {
+    AffirmationCard(Affirmation(R.string.affirmation1, R.drawable.image1))
+}
+
