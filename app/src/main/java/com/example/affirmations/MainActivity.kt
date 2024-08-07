@@ -96,8 +96,10 @@ fun AffirmationCard(affirmation: Affirmation, modifier: Modifier = Modifier) {
     //  It is a best practice to pass a modifier to every composable and set it to a default value.
     Card(modifier = modifier) {
         Column {
-            // In Compose, a Card is a surface that displays content and actions in a single container (Image and Text).
-            // The vertical layout of the image and text can be achieved using a Column composable wrapped in a Card composable.
+            // In Compose, a Card is a surface that displays content and actions in a single
+            // container (Image and Text).
+            // The vertical layout of the image and text can be achieved using a Column composable
+            // wrapped in a Card composable.
             Image(
                 // an Image composable always requires a resource to display, and a contentDescription
                 painter = painterResource(affirmation.imageResourceId),
